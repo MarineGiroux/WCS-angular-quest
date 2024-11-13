@@ -2,7 +2,8 @@ import { Component, inject } from '@angular/core';
 import { Article } from '../../models/article.model';
 import { CommonModule } from '@angular/common';
 import { ArticleThumbnailComponent } from '../article-thumbnail/article-thumbnail.component';
-import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-article-list',
@@ -12,14 +13,12 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './article-list.component.scss',
 })
 export class ArticleListComponent {
-  articles: Article[] = [];
-  http = inject(HttpClient);
+  articles$!: Observable<Article[]>;
+
+  private apiService = inject(ApiService);
 
   ngOnInit(){
-    this.http.get<Article[]>('http://localhost:3000/articles')
-    .subscribe(data => {
-      this.articles= data;
-    });
+    this.articles$ = this.apiService.getArticles();
   }
 
   handleLike(article: Article) {
